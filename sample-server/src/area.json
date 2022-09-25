@@ -1,0 +1,14 @@
+{
+  "areas": [{
+    "name": "ROUNDROCK",
+    "zipcode": "78727"
+  },
+  {
+    "name": "DOWNTOWN",
+    "zipcode": "78701"
+  },
+  {
+    "name": "SOUTHLAMAR",
+    "zipcode": "78741"
+  }]
+}
