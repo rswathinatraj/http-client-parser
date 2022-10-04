@@ -1,2 +1,5 @@
 ### GetAllLocations
 GET http://localhost:8080/areas
+
+### GetAllRestaurants
+GET http://localhost:8080/areas/78701/restaurants

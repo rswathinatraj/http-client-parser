@@ -1,39 +1,7 @@
 import re
-import requests
 import sys, getopt
-
-class Request:
-    def __init__(self):
-        self._name = ""
-        self._method = ""
-        self._url = ""
-    
-    @property
-    def name(self):
-        return self._name
-
-    @property
-    def method(self):
-        return self._method
-
-    @property
-    def url(self):
-        return self._url
-
-    @name.setter
-    def name(self, name):
-        self._name = name
-
-    @method.setter
-    def method(self, method):
-        self._method = method
-
-    @url.setter
-    def url(self, url):
-        self._url = url
-
-    def __str__(self):
-        return f"name: {self.name}\nmethod: {self.method}\nurl: {self.url}\n"
+import RequestFactory
+import HttpRequest
 
 def extract_name(line):
     name = re.search(r"([#]{3}) ([a-zA-Z]*)", line)
@@ -45,7 +13,8 @@ def extract_method_url(line):
         
 
 def parse_request(file):
-    request = Request()
+    request = HttpRequest.Request()
+    request_factory = RequestFactory.Factory()
     while (True):
         line = file.readline()
         if (line):
@@ -59,38 +28,42 @@ def parse_request(file):
                         request.method = method_url[0]
                         request.url = method_url[1]
             else:
-                return request
+                request_factory.request = request
+                return request_factory.construct_request()
         else:
-            return request
+            if (request.name):
+                request_factory.request = request
+                return request_factory.construct_request()   
+            else:
+                return
         
+def main():
+    dryrun = False
 
-dryrun = False
-
-try:
-    options, args = getopt.getopt(sys.argv[1:], "hd", ["help", "dryrun"])
-except getopt.GetoptError:
-    print("python3 client-parser.py")
-    sys.exit(2)
-for option, arg in options:
-    if option in ("-h", "--help"):
+    try:
+        options, args = getopt.getopt(sys.argv[1:], "hd", ["help", "dryrun"])
+    except getopt.GetoptError:
         print("python3 client-parser.py")
-        sys.exit()
-    elif option in ("-d", "--dryrun"):
-        dryrun = True
+        sys.exit(2)
+    for option, arg in options:
+        if option in ("-h", "--help"):
+            print("python3 client-parser.py")
+            sys.exit()
+        elif option in ("-d", "--dryrun"):
+            dryrun = True
 
-with open("sample-http-client.http", "r") as file:
-    reqs = []
-    while (True):
-        request = parse_request(file)
-        if (request.name != ""):
-            reqs.append(request)
-            continue
-        else:
-            break
-    print(dryrun)
-    for request in reqs:
-        print(request)
-        if not dryrun:
-            r = requests.get(url = request.url)
-            data = r.json()
-            print(data)
+    with open("sample-http-client.http", "r") as file:
+        reqs:HttpRequest.Request = []
+        while (True):
+            request = parse_request(file)
+            if (isinstance(request, HttpRequest.Request) and request.name != ""):
+                reqs.append(request)
+                continue
+            else:
+                break
+        for request in reqs:
+            if not dryrun:
+                data = request.call_request()
+                print(data)
+
+main()
