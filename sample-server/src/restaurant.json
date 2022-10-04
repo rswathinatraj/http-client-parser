@@ -1,0 +1,32 @@
+{
+    "restaurants": [{
+        "id": "1",
+        "name": "Wendys",
+        "areaId": "78727"
+    },
+    {
+        "id": "2",
+        "name": "CAVA",
+        "areaId": "78727"
+    },
+    {
+        "id": "1",
+        "name": "Chipotle",
+        "areaId": "78701"
+    },
+    {
+        "id": "2",
+        "name": "Chik-Fil-A",
+        "areaId": "78701"
+    },
+    {
+        "id": "1",
+        "name": "Popeyes",
+        "areaId": "78741"
+    },
+    {
+        "id": "2",
+        "name": "KFC",
+        "areaId": "78741"
+    }]
+}
