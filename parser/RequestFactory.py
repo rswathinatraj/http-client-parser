@@ -1,5 +1,4 @@
-import HttpRequest
-import Get
+import HttpRequest, Get
 
 class Factory:
     def __init__(self):

@@ -1,7 +1,7 @@
 import re
+import RequestFactory, HttpRequest
 import sys, getopt
-import RequestFactory
-import HttpRequest
+import json
 
 def extract_name(line):
     name = re.search(r"([#]{3}) ([a-zA-Z]*)", line)
@@ -38,10 +38,12 @@ def parse_request(file):
                 return
         
 def main():
-    dryrun = False
+    dryrun:bool = False
+    env:str = ""
+    env_vars = {}
 
     try:
-        options, args = getopt.getopt(sys.argv[1:], "hd", ["help", "dryrun"])
+        options, args = getopt.getopt(sys.argv[1:], "hde:", ["help", "dryrun", "env="])
     except getopt.GetoptError:
         print("python3 client-parser.py")
         sys.exit(2)
@@ -51,6 +53,13 @@ def main():
             sys.exit()
         elif option in ("-d", "--dryrun"):
             dryrun = True
+        elif option in ("-e", "--env"):
+            env = arg     
+
+    if env != "":
+        with open("http-client.env.json", "r") as file:
+            data = json.loads(file.read())
+            env_vars = data.get(env)
 
     with open("sample-http-client.http", "r") as file:
         reqs:HttpRequest.Request = []
@@ -63,6 +72,7 @@ def main():
                 break
         for request in reqs:
             if not dryrun:
+                request.replace_env_vars(env_vars)
                 data = request.call_request()
                 print(data)
 
